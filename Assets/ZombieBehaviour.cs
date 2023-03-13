@@ -4,11 +4,21 @@ using UnityEngine;
 
 public class ZombieBehaviour : MonoBehaviour
 {
+    [SerializeField] float health, maxHealth = 3f;
     GameObject player;
     // Start is called before the first frame update
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        health = maxHealth;
+    }
+    public void TakeDamage(float damageAmount)
+    {
+        health -= damageAmount; // 3 -> 2 -> 1 -> 0 = Enemy Has Died
+
+        if(health <= 0) { 
+        Destroy(gameObject);
+        }
     }
 
     // Update is called once per frame
@@ -18,19 +28,5 @@ public class ZombieBehaviour : MonoBehaviour
         //Vector3 playerDirection = transform.position - player.transform.position;
         
         transform.Translate(Vector3.forward * Time.deltaTime);
-    }
-    private void OnCollisionEnter(Collision collision)
-    {
-        GameObject other = collision.gameObject;
-        if (other.CompareTag("Bullet"))
-        {
-            // zderzyli?my si? z pociskiem - usu? pocisk i asteroid? z gry
-
-            //zniszcz pocisk
-            Destroy(other);
-
-            //zniszcz asteroide
-            Destroy(gameObject);
-        }
     }
 }
