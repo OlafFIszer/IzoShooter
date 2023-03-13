@@ -18,11 +18,11 @@ public class BulletScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        GameObject target = collision.gameObject;
-        if (target.CompareTag("Enemy"))
+        if (collision.gameObject.TryGetComponent<ZombieBehaviour>(out ZombieBehaviour enemyComponent))
         {
-            Destroy(target);
+            enemyComponent.TakeDamage(1);
         }
+        Destroy(gameObject);
     }
 }
 
