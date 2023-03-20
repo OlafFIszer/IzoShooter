@@ -26,14 +26,26 @@ public class ZombieBehaviour : MonoBehaviour
        
         
     }
-        
 
+    // Update is called once per frame
     void Update()
     {
         transform.LookAt(player.transform.position);
         
         transform.Translate(Vector3.forward * Time.deltaTime);
     }
+    private void OnCollisionEnter(Collision collision)
+    {
+        GameObject other = collision.gameObject;
+        if (other.CompareTag("Bullet"))
+        {
+            // zderzyli?my si? z pociskiem - usu? pocisk i asteroid? z gry
 
+            //zniszcz pocisk
+            Destroy(other);
+
+            //zniszcz asteroide
+            Destroy(gameObject);
+        }
     }
-
+}
