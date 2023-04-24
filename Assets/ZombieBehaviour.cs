@@ -1,51 +1,78 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.XR;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class ZombieBehaviour : MonoBehaviour
 {
-    [SerializeField] float health, maxHealth = 3f;
-    GameObject player;
+    public float sightRange = 15f;
+    public float hearRange = 5f;
+    int hp = 1;
 
-    
+    GameObject player;
+    NavMeshAgent agent;
+
+    private bool playerVisible = false;
+    private bool playerHearable = false;
+
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        health = maxHealth;
-
-
-    }
-    public void TakeDamage(float damageAmount)
-    {
-        health -= damageAmount;
-
-        if(health <= 0) { 
-        Destroy(gameObject);
-        }
-
-       
-        
+        agent = GetComponent<NavMeshAgent>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        transform.LookAt(player.transform.position);
-        
-        transform.Translate(Vector3.forward * Time.deltaTime);
+        Vector3 raySource = transform.position + Vector3.up * 1.8f;
+        Vector3 rayDirection = player.transform.position - transform.position;
+        RaycastHit hit;
+        if (Physics.Raycast(raySource, rayDirection, out hit, sightRange))
+        {
+            Debug.Log(hit.transform.gameObject.name.ToString());
+            if (hit.transform.CompareTag("Player"))
+                playerVisible = true;
+            else
+                playerVisible = false;
+        }
+
+        Collider[] heardObjects = Physics.OverlapSphere(transform.position, hearRange);
+        playerHearable = false;
+        foreach (Collider collider in heardObjects)
+        {
+            if (collider.gameObject.CompareTag("Player"))
+            {
+                playerHearable = true;
+            }
+        }
+
+
+        agent.isStopped = !playerVisible && !playerHearable;
+        if (hp > 0)
+        {
+            agent.destination = player.transform.position;
+        }
+
     }
     private void OnCollisionEnter(Collision collision)
     {
-        GameObject other = collision.gameObject;
-        if (other.CompareTag("Bullet"))
+        if (collision.gameObject.CompareTag("Bullet"))
         {
-            // zderzyli?my si? z pociskiem - usu? pocisk i asteroid? z gry
-
-            //zniszcz pocisk
-            Destroy(other);
-
-            //zniszcz asteroide
-            Destroy(gameObject);
+            Destroy(collision.gameObject);
+            hp--;
+            if (hp <= 0)
+            {
+                Die();
+            }
         }
+    }
+    private void Die()
+    {
+        agent.isStopped = true;
+        transform.Translate(Vector3.up);
+        transform.Rotate(transform.right * -90);
+        GetComponent<BoxCollider>().enabled = false;
+        Destroy(transform.gameObject, 1);
     }
 }
