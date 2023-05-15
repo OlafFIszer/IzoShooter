@@ -7,6 +7,7 @@ using UnityEngine.AI;
 
 public class ZombieBehaviour : MonoBehaviour
 {
+    public AudioClip deathclip;
     public float sightRange = 15f;
     public float hearRange = 5f;
     int hp = 1;
@@ -64,6 +65,8 @@ public class ZombieBehaviour : MonoBehaviour
             if (hp <= 0)
             {
                 Die();
+                AudioSource.PlayClipAtPoint(deathclip, transform.position);
+
             }
         }
     }
@@ -74,5 +77,6 @@ public class ZombieBehaviour : MonoBehaviour
         transform.Rotate(transform.right * -90);
         GetComponent<BoxCollider>().enabled = false;
         Destroy(transform.gameObject, 1);
+
     }
 }

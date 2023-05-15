@@ -16,13 +16,6 @@ public class BulletScript : MonoBehaviour
 
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.TryGetComponent<ZombieBehaviour>(out ZombieBehaviour enemyComponent))
-        {
-            enemyComponent.TakeDamage(1);
-        }
-        Destroy(gameObject);
-    }
+
 }
 
